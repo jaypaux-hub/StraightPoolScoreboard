@@ -1,0 +1,2 @@
+# StraightPoolScoreboard
+Scoreboard for pool
