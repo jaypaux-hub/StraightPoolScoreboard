@@ -1,0 +1,399 @@
+<!--
+Enclave at Ocean
+Billiards Club
+Straingt Pool Scoreboard
+21-Feb-2026
+
+General Instrucitons for use:  Load web page,
+enter player/team names
+press/click "start"
+
+This will reset displayed scores to zero and restart the clock.
+
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Billiards Club - Scoreboard</title>
+<style>
+
+html {
+       font-size: 100%;
+}
+
+body {
+       background-color: #2596be;
+       width: 100vw;
+       height:100vw;
+}
+
+#container {
+        display: inline-block;
+        padding: 0.5vw 1vw;
+}
+
+.wrapper-div {
+        display: inline-block;
+}
+.center-head {
+        grid-column: 1/3;
+        font-family: 'Quicksand', sans-serif;
+        font-size:3vw;
+        justify-content:center;
+        text-align: center;
+}
+
+.scoreboard {
+	display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        font-family: 'Quicksand', sans-serif;
+        grid-row-gap: 0px;
+}
+.scoreboard {
+        width:100vw;
+        height:auto;
+}
+.scoreboard {
+        justify-content:center;
+        text-align:center;
+}
+
+.scoreboard-across-grid {
+        grid-column: 1/3;
+        font-family: 'Quicksand', sans-serif;
+        border-top:  2px dotted black;
+        font-style: italic;
+        justify-content:center;
+        text-align: center;
+}
+
+.scoreboard__name {
+	font-weight: bold;
+        border-bottom: 1px solid #ddd;
+        padding: 0px;
+        text-align: center;
+}
+
+.scoreboard__name--one {
+       color: red;
+       line-height: .0;
+}
+
+.scoreboard__name--two {
+       color: blue;
+       line-height: .0;
+}
+
+.scoreboard__score-red {
+        font-size: 25vw;
+        padding: 0px;
+        text-align: center;
+        font-family: 'digital-clock', sans-serif;
+        color: red;
+        font-weight: normal;
+}
+
+.scoreboard__score-blue {
+        font-size: 25vw;
+        padding: 0px;
+        text-align: center;
+        font-family: 'digital-clock', sans-serif;
+        color: blue;
+        font-weight: normal;
+}
+
+.scoreboard__controls {
+       display: flex;
+       justify-content: center;
+
+}
+
+.scoreboard__control-button {
+	flex-grow: 0.1;
+	border: none;
+        background: transparent;
+        color: black;
+         width:1vw;
+	cursor: pointer;
+        font-size: 8vw;
+        font-weight: normal;
+}
+
+.scoreboard__control-button:hover {
+        background: #ddd;
+        border-radius:70%
+}
+
+.scoreboard__control-button:active {
+	background: #ccc;
+}
+
+input[type=text] {
+     width: 30vw;
+     padding: 6px 1px;
+     margin: 2px;
+     font-weight: bold;
+     font-size: 1.5vw;
+     box-sizing: border-box;
+     border: 2px solid black;
+     border-radius: 4px;
+     text-align: center;
+     line-height:normal;
+}
+
+.timer_area {
+     font-family: 'Quicksand', sans-serif;
+        
+}
+
+
+.dz{
+    grid-column: 1 / 3;
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: 1fr 1fr;
+    color:orange;
+    justify-content: center;
+}
+
+.dz2{
+    grid-column:  1 / 3;
+    display: grid;
+    grid-gap: 10px;
+    grid-template-columns: 1fr 1fr;
+    color:red;     
+}
+
+.dz2{
+     justify-content: center;
+     display: flex;
+}
+
+.timer_elapsed {
+        grid-column: 1/3;
+        font-family: 'Quicksand', sans-serif;
+        justify-content:center;
+        text-align: center;}
+
+
+.timer_elapsed { 
+        color: khaki;
+        justify-content: center;
+        font-family: 'digital-clock', sans-serif;
+        font-size: 5vw;
+        line-height:.2;
+        font-weight: normal;
+}
+.timer_button_area {
+        grid-column: 1 / 3;
+        font-family: 'Quicksand', sans-serif;
+        font-size: 2.5vw;
+        font-style:italic;
+        font-weight: bold;
+        justify-content: center;
+        font-weight: normal;
+}
+
+.timer__controls {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        justify-content: center;
+        grid-gap: 10px;
+}
+.timer__controls {
+        display: flex;
+}
+
+.timer__control-button {
+	flex-grow: 0;
+	border: none;
+        background-color: transparent;
+	cursor: pointer;
+        font-size: 2.5vw;
+        text-align: center;
+        font-style: italic;
+        font-weight: bold;
+        justify-content: center;
+        align-items: center;
+}
+
+.timer__control-button:hover {
+        background: #dcd;
+        border-radius:70%;
+}
+
+.timer__control-button:active {
+	background: #ccc;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+}
+
+
+
+</style>
+
+<!-- JAVASCRIPT -->
+
+<script>
+
+class ScoreboardView {
+	constructor(root, playerOneName, playerTwoName, onControlButtonClick) {
+		this.root = root;
+		this.root.innerHTML = `
+<div class="container">
+  <div class="wrapper-div">
+<div class="center-head">Enclave Billiards Club</div>
+   <div class="scoreboard">   
+   <div>
+     <input type="text" id="p1" name="p1name" placeholder="Enter player 1"/>
+   </div>
+   <div>
+     <input type="text" id="p2" name="p2name" placeholder="Enter player 2"/>
+   </div>			
+   <div class="scoreboard__score-red" data-for-player="one">0</div>
+   <div class="scoreboard__score-blue" data-for-player="two">0</div>
+   <div class="scoreboard__controls" data-for-player="one">
+      <button class="scoreboard__control-button">-</button>
+      <button class="scoreboard__control-button">+</button>
+   </div>
+   <div class="scoreboard__controls" data-for-player="two">
+      <button class="scoreboard__control-button">-</button>
+      <button class="scoreboard__control-button">+</button>
+   </div>
+   <br />
+   <div class="timer_elapsed" id="elapsedZ" data-for-timer="timer">00:00</div>
+
+   <div class="timer_button_area">
+       <br />
+       <div class="timer__controls">
+           <button class="timer__control-button" id="startButton">start</button>
+           <button class="timer__control-button" id="resumeButton">resume</button>
+           <button class="timer__control-button" id="stopButton">stop</button>
+        </div>
+    </div>
+    
+  </div>
+  </div>
+  </div>
+
+`;
+
+	this.root.querySelectorAll(".scoreboard__control-button").forEach(controlButton => {
+			controlButton.addEventListener("click", () => {
+				const direction = controlButton.textContent === "-" ? "minus" : "plus";
+				const player = controlButton.closest(".scoreboard__controls").dataset.forPlayer;
+                                onControlButtonClick(player, direction);
+			});
+              });
+
+	}
+
+	update(playerOneScore, playerTwoScore,elapsedZ) {
+		this.root.querySelector(".scoreboard__score-red[data-for-player='one']").textContent = playerOneScore;
+		this.root.querySelector(".scoreboard__score-blue[data-for-player='two']").textContent= playerTwoScore;
+                this.root.querySelector(".timer_elapsed[data-for-timer='timer']").textContent = elapsedZ;
+        }
+       
+}
+
+
+</script>
+
+</head>
+<body>
+
+<div class="center_div">
+<div id="app"></div>
+
+<script>
+
+let playerOneScore = 0;
+let playerTwoScore = 0;
+let player ="x";
+let sdirection="yikes";
+
+const root = document.querySelector("#app");
+const view = new ScoreboardView(root, "Player One", "Player Two",(player, direction, sdirection) => {
+const difference = direction === "minus" ? -1 : 1;
+const sdifference = sdirection === "minus" ? -1 : 1;
+
+if (player === "one") {
+   playerOneScore = Math.max(playerOneScore + difference,-5);
+} else {
+   playerTwoScore = Math.max(playerTwoScore + difference, -5);
+}
+const minutes = Math.floor(timeElapsed / 60);
+const seconds = timeElapsed % 60;
+elapsedZZ = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+view.update(playerOneScore, playerTwoScore,elapsedZZ);
+
+});
+
+
+let timerInterval;
+let timeElapsed = 0;
+let elapsedZZ;
+
+const timerElement = document.getElementById("timer");
+
+// Start timer
+
+clearInterval(timerInterval);
+//timerInterval = setInterval(updateTimer, 1000);
+
+
+function updateTimer() {
+     const hours      = Math.floor(timeElapsed / 3600);
+     const minutes    = Math.floor(timeElapsed / 60);
+     const adjMinutes = minutes - (hours * 60);
+const seconds    = timeElapsed % 60;
+
+if (timeElapsed < 600) {
+     elapsedZ.textContent = `${minutes.toString().padStart(2,'')}:${seconds.toString().padStart(2, '0')}`;}
+else {
+   if (timeElapsed < 3600) {
+     elapsedZ.textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2, '0')}`;}
+   else {
+     elapsedZ.textContent =`${hours.toString().padStart(2,'')}:${adjMinutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;}
+   }
+     timeElapsed++;      
+}
+
+startButton.addEventListener("click", () => {
+     clearInterval(timerInterval);
+     timerInterval = setInterval(updateTimer, 1000);
+     timeElapsed=0;
+     playerOneScore = 0;
+     playerTwoScore = 0;
+     view.update(playerOneScore, playerTwoScore);
+});
+
+resumeButton.addEventListener("click", () => { 
+     timerInterval = setInterval(updateTimer, 1000);
+});
+
+stopButton.addEventListener("click", () => {
+     clearInterval(timerInterval);
+});
+
+</script>
+</div>
+
+</body>
+</html>
