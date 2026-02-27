@@ -34,7 +34,9 @@ body {
 .center-head {
         grid-column: 1/3;
         font-family: 'Arial', sans-serif;
-        font-size:3vw;
+        font-style: italic;
+        font-weight: bold;
+        font-size:2vw;
         justify-content:center;
         text-align: center;
 }
@@ -179,7 +181,13 @@ input[type=text] {
   position: absolute;
   z-index: 1;
 }
-
+.center-bottom {
+        grid-column: 1/3;
+        font-family: 'Arial', sans-serif;
+        font-size: 1vw;
+        justify-content:center;
+        text-align: center;
+}
 
 
 </style>
@@ -192,6 +200,9 @@ class ScoreboardView {
 	constructor(root, playerOneName, playerTwoName, onControlButtonClick) {
 		this.root = root;
 		this.root.innerHTML = `
+<audio id="audioPlayerRed" src="Click-Red.mp3"></audio>
+<audio id="audioPlayerBlue" src="Click-Blue.mp3"></audio>
+<audio id="audioClickTimer" src="Click-Timer.mp3"></audio>
 
 <div class="center-head">Enclave Billiards Club</div>
 <div class="scoreboard">   
@@ -216,8 +227,8 @@ class ScoreboardView {
 <button class="timer__control-button" id="resumeButton">resume</button>
 <button class="timer__control-button" id="stopButton">stop</button>
 </div>
-</div>
-
+<br>
+<div class="center-bottom">v2.0 27-Feb-2026</div>
 `;
 
 	this.root.querySelectorAll(".scoreboard__control-button").forEach(controlButton => {
@@ -258,6 +269,9 @@ const root = document.querySelector("#app");
 const view = new ScoreboardView(root, "Player One", "Player Two",(player, direction, sdirection) => {
 const difference = direction === "minus" ? -1 : 1;
 const sdifference = sdirection === "minus" ? -1 : 1;
+const audioPlayerRed = document.getElementById('audioPlayerRed');
+const audioPlayerBlue = document.getElementById('audioPlayerBlue');
+const audioClickTimer = document.getElementById('audioClickTimer');
 
 if (player === "one") {
    playerOneScore = Math.max(playerOneScore + difference,-5);
@@ -269,6 +283,13 @@ const seconds = timeElapsed % 60;
 elapsedZZ = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 view.update(playerOneScore, playerTwoScore,elapsedZZ);
 
+if (player === "one") {
+    audioPlayerRed.currentTime = 0;
+    audioPlayerRed.play();
+} else {
+   audioPlayerBlue.currentTime = 0;
+   audioPlayerBlue.play();
+}
 });
 
 
@@ -288,7 +309,8 @@ function updateTimer() {
      const hours      = Math.floor(timeElapsed / 3600);
      const minutes    = Math.floor(timeElapsed / 60);
      const adjMinutes = minutes - (hours * 60);
-const seconds    = timeElapsed % 60;
+     const seconds    = timeElapsed % 60;
+    
 
 if (timeElapsed < 600) {
      elapsedZ.textContent = `${minutes.toString().padStart(2,'')}:${seconds.toString().padStart(2, '0')}`;}
@@ -307,15 +329,19 @@ startButton.addEventListener("click", () => {
      timeElapsed=0;
      playerOneScore = 0;
      playerTwoScore = 0;
+     audioClickTimer.play();
      view.update(playerOneScore, playerTwoScore);
 });
 
-resumeButton.addEventListener("click", () => { 
+resumeButton.addEventListener("click", () => {
+     audioClickTimer.play();
      timerInterval = setInterval(updateTimer, 1000);
 });
 
 stopButton.addEventListener("click", () => {
-     clearInterval(timerInterval);
+    
+clearInterval(timerInterval);
+ audioClickTimer.play();
 });
 
 </script>
